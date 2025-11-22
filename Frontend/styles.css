@@ -1,0 +1,111 @@
+/* Thiết lập cơ bản */
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background-color: #f4f4f9;
+}
+
+.container {
+  display: flex;
+  height: 100vh; /* Chiếm toàn bộ chiều cao màn hình */
+}
+
+/* 1. Thanh Taskbar (Sidebar) */
+.sidebar {
+  width: 250px; /* Chiều rộng cố định cho thanh bên */
+  background-color: #ffffff;
+  padding: 20px;
+  box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+  display: flex; /* Sử dụng flex để căn chỉnh nội dung và nút admin */
+  flex-direction: column;
+  justify-content: space-between; /* Đẩy nút admin xuống dưới */
+}
+
+.taskbar-content h3 {
+  color: #333;
+  border-bottom: 2px solid #eee;
+  padding-bottom: 10px;
+  margin-top: 0;
+}
+
+/* Các trường nhập liệu */
+.sidebar label,
+.sidebar input,
+.sidebar textarea,
+.sidebar button {
+  display: block;
+  width: 100%;
+  margin-bottom: 10px;
+}
+
+.sidebar input[type="text"],
+.sidebar textarea {
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-sizing: border-box; /* Tính cả padding và border vào width */
+}
+
+/* Nút Chỉ Đường */
+#get-directions {
+  background-color: #007bff;
+  color: white;
+  padding: 12px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: background-color 0.3s;
+}
+
+#get-directions:hover {
+  background-color: #0056b3;
+}
+
+/* Nút Admin */
+.admin-button {
+  background-color: #6c757d;
+  color: white;
+  padding: 10px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.admin-button:hover {
+  background-color: #5a6268;
+}
+
+/* Ẩn/Hiện các panel chế độ */
+.mode-panel {
+  display: none;
+  padding: 10px 0;
+}
+
+.mode-panel.active {
+  display: block;
+}
+
+/* Định dạng cho chế độ Admin */
+#admin-mode textarea {
+  height: 100px;
+  resize: vertical;
+}
+.admin-note {
+  font-size: 0.9em;
+  color: #dc3545;
+  text-align: center;
+}
+
+/* 2. Khu vực Bản đồ */
+.map-container {
+  flex-grow: 1; /* Chiếm phần còn lại của không gian */
+  background-color: #e2e2e2;
+  /* Dùng cho mục đích minh họa trước khi tích hợp API bản đồ */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 1.5em;
+  color: #666;
+}
