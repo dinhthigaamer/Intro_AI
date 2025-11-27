@@ -1,35 +1,36 @@
+from astar import astar, haversine
 import networkx as nx
-# Giả định 'astar' là module chứa các class Graph và Edge
-from astar import Graph, Edge 
 
-def load_graphml(path):
-    # Đọc đồ thị từ file GraphML bằng NetworkX
-    nx_graph = nx.read_graphml(path)
-    graph = Graph()
+# ---- 1. Load GraphML ----
+graphml_file = r"D:\study\minh\map_data\graph_all.graphml"
+G = nx.read_graphml(graphml_file)
 
-    # 1. Xử lý Nodes (Các nút/điểm)
-    for node in nx_graph.nodes:
-        # Lấy tọa độ (lat, lon) từ thuộc tính của nút trong NetworkX
-        lat = float(nx_graph.nodes[node]["lat"])
-        lon = float(nx_graph.nodes[node]["lon"])
-        
-        # Lưu tọa độ vào dictionary nodes của Graph tùy chỉnh
-        graph.nodes[node] = (lat, lon)
-        # Khởi tạo danh sách cạnh rỗng cho mỗi nút
-        graph.edges[node] = []
+# ---- 2. Chuyển kiểu dữ liệu node ----
+for n, data in G.nodes(data=True):
 
-    # 2. Xử lý Edges (Các cạnh/đoạn đường)
-    for u, v, data in nx_graph.edges(data=True):
-        edge = Edge(
-            to=v,
-            distance_km=float(data["distance_km"]),
-            base_weight=float(data["base_weight"]),
-            traffic_level=float(data["traffic"]),
-            allowed_vehicles=data["allowed"].split(","),
-            status=data["status"]  # Lấy trạng thái A, B, C, D từ dữ liệu GraphML
-        )
-        
-        # Thêm cạnh vào danh sách các cạnh đi ra từ nút u
-        graph.edges[u].append(edge)
+    # Tọa độ bắt buộc cần cho A*
+    if "x" in data:
+        data["x"] = float(data["x"])
+    if "y" in data:
+        data["y"] = float(data["y"])
 
-    return graph
+    # Xóa các thuộc tính không cần thiết
+    keys_to_remove = [k for k in data.keys() if k not in ("x", "y")]
+    for k in keys_to_remove:
+        del data[k]
+
+# ---- 3. Chuyển kiểu dữ liệu edge ----
+for u, v, data in G.edges(data=True):
+
+    # length là duy nhất cần cho A*
+    if "length" in data:
+        data["length"] = float(data["length"])
+    else:
+        data["length"] = 0.0   # đề phòng thiếu dữ liệu
+
+    # Xóa thuộc tính không cần thiết
+    keys_to_keep = ("length",)
+    for k in list(data.keys()):
+        if k not in keys_to_keep:
+            del data[k]
+
