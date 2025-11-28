@@ -1,13 +1,40 @@
-<!DOCTYPE html>
-<html>
-
+<!doctype html>
+<html lang="vi">
 <head>
-    <title>Trang chủ</title>
+  <meta charset="utf-8">
+  <title>Admin – Quản lý đường</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css"/>
 </head>
+<body>  
+  <div class="container">
+    <div class="sidebar">
+      <h2>Quản lý map</h2>
+      <label>Điểm đi</label>
+      <input id="origin-input" placeholder="Nhập tên địa điểm">
+      <label>Điểm đến</label>
+      <input id="dest-input" placeholder="Nhập tên địa điểm">
+      <div class="actions">
+        <button id="find-route">Tìm đường</button>
+        <button id="clear-route">Xóa</button>
+      </div>
+      <div id="route-stats"></div>
 
-<body>
-    <h1>Xin chào!</h1>
-    <p>Đây là trang HTML được trả về từ Flask server.</p>
+      <h3>Cập nhật đoạn đường</h3>
+      <div>Đoạn chọn: <span id="segment-id">—</span></div>
+      <label>Trạng thái</label>
+      <select id="segment-status">
+        <option value="normal">Thông thoáng</option>
+        <option value="jam">Tắc</option>
+        <option value="jam">Ngập</option>
+      </select>
+      <label>Trọng số</label>
+      <input id="segment-weight" type="number" value="1">
+      <button id="update-segment">Cập nhật</button>
+    </div>
+    <div id="map" class="map"></div>
+  </div>
+  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+  <script src="admin.js"></script>
 </body>
-
 </html>
