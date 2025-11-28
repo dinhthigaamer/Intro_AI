@@ -82,15 +82,6 @@ document.addEventListener('DOMContentLoaded', async () => {
       picking = 'origin';
     }
   });
-
-  const seg1 = L.polyline([[21.016,105.812],[21.017,105.814]],{color:'green',weight:6}).addTo(map);
-  seg1._id=1; seg1._status="normal"; seg1._weight=1;
-  seg1.on('click',()=>{selectedSegment=seg1;document.getElementById('segment-id').textContent=seg1._id;});
-
-  const seg2 = L.polyline([[21.017,105.814],[21.018,105.816]],{color:'red',weight:6}).addTo(map);
-  seg2._id=2; seg2._status="jam"; seg2._weight=2;
-  seg2.on('click',()=>{selectedSegment=seg2;document.getElementById('segment-id').textContent=seg2._id;});
-
   document.getElementById('update-segment').onclick = () => {
     if (!selectedSegment) return alert("Chọn đoạn đường");
     const status = document.getElementById('segment-status').value;
