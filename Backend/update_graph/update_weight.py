@@ -10,7 +10,7 @@ from graph_loader import MapLoader
 import astar  # isort:skip
 
 target_path = MAP_DIR / "weighted_graph.graphml"
-output_path = MAP_DIR / "output.graphml"
+output_path = MAP_DIR / "weighted_graph.graphml"
 
 
 def check_point_exist(G, x, y):
