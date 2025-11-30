@@ -1,9 +1,16 @@
-import networkx as nx
-from pathlib import Path
-from file_path import MAP_DIR
+import os
+import sys
 import insert_point
+from file_path import MAP_DIR
+from pathlib import Path
+import networkx as nx
 
-target_path = MAP_DIR / "graph.graphml"
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
+from graph_loader import MapLoader
+import astar  # isort:skip
+
+target_path = MAP_DIR / "weighted_graph.graphml"
+output_path = MAP_DIR / "output.graphml"
 
 
 def check_point_exist(G, x, y):
@@ -14,33 +21,38 @@ def check_point_exist(G, x, y):
     return False
 
 
-def update_weight_path(G, path, new_weight):
-    for i in range(len(path) - 1):
-        u = path[i]
-        v = path[i + 1]
-        if G.has_edge(u, v):
-            G[u][v]["weight"] = new_weight
-        else:
-            raise ("Không tồn tại cạnh:", u, "->", v)
-
-    nx.write_graphml(G, "output.graphml")
-
-
-def update_weight(xu, yu, xv, yv, new_weight=1):
+def update_weight(start, goal, new_weight=1):
     # Cập nhật trọng số cho đường đi giữa 2 đỉnh
     # xu, yu, xv, yv là toạ độ của điểm đầu vào cuối
     # new_weight là trọng số mới cần cập nhật
 
-    G = nx.read_graphml(target_path)
-    # Kiểm tra xem đỉnh đã tồn tai chưa
-    if check_point_exist(G, xu, yu) == False:
-        insert_point.insert_point(MAP_DIR / "lmao")
+    mp = MapLoader(target_path)
+    G = mp.get_graph()
+    # # Kiểm tra xem đỉnh đã tồn tai chưa
+    # if check_point_exist(G, xu, yu) == False:
+    #     insert_point.insert_point(MAP_DIR / "lmao")
 
-    if check_point_exist(G, xv, yv) == False:
-        insert_point.insert_point(MAP_DIR / "lmao")
+    # if check_point_exist(G, xv, yv) == False:
+    #     insert_point.insert_point(MAP_DIR / "lmao")
 
     # Lấy danh sách đường đi ngắn nhất từ u->v
     # Cái này đợi Minh
-    path = shortest_path_func(xu, yu, xv, yv)
+    path, len = astar.astar(G, start, goal)
+    print(path)
+    
+    if path is None: 
+        return
+    
+    edges = list(zip(path[:-1], path[1:]))
 
-    update_weight_path(G, path, new_weight)
+    G = nx.read_graphml(target_path)
+    for a, b in edges:
+        for k in G[a][b]:
+            G[a][b][k]["weight"] = 1.0*new_weight
+
+    nx.write_graphml(G, output_path)
+
+
+# <edge source="5709996137" target="5709996140" id="0">
+if __name__ == '__main__':
+    update_weight("5709996137", "5709996124", 3)
