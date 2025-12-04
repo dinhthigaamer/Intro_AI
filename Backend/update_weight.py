@@ -1,16 +1,16 @@
+import astar  # isort:skip
+from graph_loader import MapLoader
 import os
 import sys
-import insert_point
-from file_path import MAP_DIR
+# import insert_point
+# from file_path import MAP_DIR
 from pathlib import Path
 import networkx as nx
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
-from graph_loader import MapLoader
-import astar  # isort:skip
 
-target_path = MAP_DIR / "weighted_graph.graphml"
-output_path = MAP_DIR / "output.graphml"
+target_path = "../map_data/weighted_graph.graphml"
+output_path = "../map_data/weighted_graph.graphml"
 
 
 def check_point_exist(G, x, y):
@@ -21,7 +21,7 @@ def check_point_exist(G, x, y):
     return False
 
 
-def update_weight(start, goal, new_weight=1):
+def update_weight(start, goal, new_weight=1, vehicle=None):
     # Cập nhật trọng số cho đường đi giữa 2 đỉnh
     # xu, yu, xv, yv là toạ độ của điểm đầu vào cuối
     # new_weight là trọng số mới cần cập nhật
@@ -37,12 +37,15 @@ def update_weight(start, goal, new_weight=1):
 
     # Lấy danh sách đường đi ngắn nhất từ u->v
     # Cái này đợi Minh
-    path, len = astar.astar(G, start, goal)
-    print(path)
-    
-    if path is None: 
+    if vehicle is not None:
+        path, len = astar.astar(G, start, goal, vehicle)
+    else:
+        path, len = astar.astar(G, start, goal)
+    # print(path)
+
+    if path is None:
         return
-    
+
     edges = list(zip(path[:-1], path[1:]))
 
     G = nx.read_graphml(target_path)
