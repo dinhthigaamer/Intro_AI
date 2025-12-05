@@ -28,12 +28,6 @@ def update_weight(start, goal, new_weight=1, vehicle=None):
 
     mp = MapLoader(target_path)
     G = mp.get_graph()
-    # # Kiểm tra xem đỉnh đã tồn tai chưa
-    # if check_point_exist(G, xu, yu) == False:
-    #     insert_point.insert_point(MAP_DIR / "lmao")
-
-    # if check_point_exist(G, xv, yv) == False:
-    #     insert_point.insert_point(MAP_DIR / "lmao")
 
     # Lấy danh sách đường đi ngắn nhất từ u->v
     # Cái này đợi Minh
