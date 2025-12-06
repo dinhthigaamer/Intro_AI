@@ -1,4 +1,4 @@
-from flask import Flask, render_template, url_for
+from flask import Flask, render_template, url_for, request, jsonify
 import os
 import astar
 import update_weight
@@ -14,6 +14,8 @@ app = Flask(
     static_url_path='/'       # URL prefix
 )
 
+MAP_PATH = "../map_data/weighted_graph.graphml"
+
 
 @app.route('/')
 def home():
@@ -27,20 +29,72 @@ def home_admin():
 
 @app.route('/path')
 # Trả về danh sách các đỉnh trên đường đi
-def path(start, target, vehicle):
-    return astar.astar(start, target, vehicle)
+def path():
+    try:
+        body = request.get_json()
+
+        start = body["start"]
+        target = body["target"]
+        vehicle = body["vehicle"]
+
+        path, len = astar.astar(
+            MAP_PATH, start, target, vehicle)
+
+        return {
+            "state": "success",
+            "path": path,
+            "length": len
+        }
+    except:
+        return {
+            "state": "fail",
+        }
 
 
 @app.route('/admin/path')
 # Trả về danh sách các đỉnh trên đường đi
-def path_admin(start, target, vehicle):
-    return astar.astar(start, target, vehicle)
+def path_admin():
+    try:
+        body = request.get_json()
+
+        start = body["start"]
+        target = body["target"]
+        vehicle = body["vehicle"]
+
+        path, len = astar.astar(
+            MAP_PATH, start, target, vehicle)
+
+        return {
+            "state": "success",
+            "path": path,
+            "length": len
+        }
+    except:
+        return {
+            "state": "fail",
+        }
 
 
 @app.route('/admin/update')
 # cập nhật trạng thái đường đi
-def update_admin(start, target, new_weight=1, vehicle=None):
-    update_weight.update_weight(start, target, new_weight, vehicle)
+def update_admin():
+    try:
+        body = request.get_json()
+
+        start = body["start"]
+        target = body["target"]
+        vehicle = body["vehicle"]
+        new_weight = body["new_weight"]
+
+        update_weight.update_weight(
+            MAP_PATH, start, target, new_weight, vehicle)
+        return {
+            "state": "success"
+        }
+    except:
+        return {
+            "state": "fail"
+        }
 
 
 if __name__ == '__main__':

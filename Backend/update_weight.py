@@ -21,35 +21,38 @@ def check_point_exist(G, x, y):
     return False
 
 
-def update_weight(start, goal, new_weight=1, vehicle=None):
+def update_weight(path_graphml, start, goal, new_weight=1, vehicle=None):
     # Cập nhật trọng số cho đường đi giữa 2 đỉnh
     # xu, yu, xv, yv là toạ độ của điểm đầu vào cuối
     # new_weight là trọng số mới cần cập nhật
-
-    mp = MapLoader(target_path)
-    G = mp.get_graph()
-
     # Lấy danh sách đường đi ngắn nhất từ u->v
     # Cái này đợi Minh
-    if vehicle is not None:
-        path, len = astar.astar(G, start, goal, vehicle)
-    else:
-        path, len = astar.astar(G, start, goal)
-    # print(path)
+    try:
+        if vehicle is not None:
+            path, len = astar.astar(path_graphml, start, goal,
+                                    vehicle, use_weight_length=0)
+        else:
+            path, len = astar.astar(
+                path_graphml, start, goal, vehicle="car", use_weight_length=0)
+        # print(path)
 
-    if path is None:
-        return
+        if path is None:
+            return
 
-    edges = list(zip(path[:-1], path[1:]))
+        edges = list(zip(path[:-1], path[1:]))
 
-    G = nx.read_graphml(target_path)
-    for a, b in edges:
-        for k in G[a][b]:
-            G[a][b][k]["weight"] = 1.0*new_weight
+        G = nx.read_graphml(target_path)
+        for a, b in edges:
+            for k in G[a][b]:
+                G[a][b][k]["weight"] = 1.0*new_weight
 
-    nx.write_graphml(G, output_path)
+        nx.write_graphml(G, output_path)
 
+        return {"state": "updated successfully"}
+    except:
+        raise
 
-# <edge source="5709996137" target="5709996140" id="0">
+        # <edge source="5709996137" target="5709996140" id="0">
 if __name__ == '__main__':
-    update_weight("5709996137", "5709996124", 3)
+    update_weight("../map_data/weighted_graph.graphml",
+                  "5709996137", "5709996124", 3, "car")
