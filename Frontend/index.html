@@ -1,11 +1,13 @@
 <!doctype html>
 <html lang="vi">
+
 <head>
   <meta charset="utf-8">
   <title>User – Tìm vị trí</title>
   <link rel="stylesheet" href="style.css">
-  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css"/>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
 </head>
+
 <body>
   <div class="container">
     <div class="sidebar">
@@ -14,6 +16,13 @@
       <input id="origin-input" placeholder="Nhập tên địa điểm">
       <label>Điểm đến</label>
       <input id="dest-input" placeholder="Nhập tên địa điểm">
+      <label>Phương tiện</label>
+      <select id="vehicle">
+        <option value="car">Ô tô</option>
+        <option value="motorcycle">Xe máy</option>
+        <option value="bike">Xe đạp</option>
+        <option value="walk">Đi bộ</option>
+      </select>
       <div class="actions">
         <button id="find-route">Tìm đường</button>
       </div>
@@ -23,4 +32,5 @@
   <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
   <script src="user.js"></script>
 </body>
+
 </html>

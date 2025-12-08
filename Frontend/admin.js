@@ -42,6 +42,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   async function searchPlace(query) {
     const url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}`;
     const res = await fetch(url);
+    console.log(res)
     return res.json();
   }
 
@@ -86,9 +87,9 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (!selectedSegment) return alert("Chọn đoạn đường");
     const status = document.getElementById('segment-status').value;
     const weight = document.getElementById('segment-weight').value;
-    selectedSegment._status=status;
-    selectedSegment._weight=weight;
-    selectedSegment.setStyle({color: status==="jam"?"red":"green"});
-    alert("Đã cập nhật đoạn "+selectedSegment._id);
+    selectedSegment._status = status;
+    selectedSegment._weight = weight;
+    selectedSegment.setStyle({ color: status === "jam" ? "red" : "green" });
+    alert("Đã cập nhật đoạn " + selectedSegment._id);
   };
 });

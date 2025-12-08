@@ -1,20 +1,69 @@
-from flask import Flask, render_template, url_for, request, jsonify
+from flask import Flask, render_template, url_for, request, jsonify, send_from_directory
 import os
 import astar
 import update_weight
+import convertor
 # Đường dẫn tuyệt đối đến thư mục Frontend
 frontend_path = os.path.abspath(os.path.join(
     os.path.dirname(__file__), '../Frontend'))
+map_path = os.path.abspath(os.path.join(
+    os.path.dirname(__file__), '../map_data'))
 
 # Tạo app, template_folder = Frontend, static_folder = Frontend luôn
 app = Flask(
     __name__,
     template_folder=frontend_path,  # HTML files
-    static_folder=frontend_path,    # CSS, JS, images trực tiếp trong Frontend
+    # CSS, JS, images trực tiếp trong Frontend
+    static_folder=frontend_path,
     static_url_path='/'       # URL prefix
 )
 
-MAP_PATH = "../map_data/weighted_graph.graphml"
+MAP_PATH = {
+    "car": "../map_data/phuong_lang_drive.graphml",
+    "bike": "../map_data/phuong_lang_bike.graphml",
+    "walk": "../map_data/phuong_lang_walk.graphml",
+    "motorcycle": "../map_data/phuong_lang_drive.graphml",
+}
+
+
+def path(request):
+    try:
+        body = request.get_json()
+
+        nodes = body["nodes"]
+        vehicle = body["vehicle"]
+
+        # print(nodes)
+
+        nodes = convertor.coordinate_to_node(MAP_PATH[vehicle], nodes)
+
+        print(nodes)
+        if (len(nodes) == 2):
+            path, length = astar.astar(
+                MAP_PATH[vehicle], nodes[0], nodes[1], vehicle)
+            print(path, length)
+        else:
+            print(nodes)
+
+        # print(path)
+        path = convertor.node_to_coordinate(MAP_PATH[vehicle], path)
+
+        # path = convertor.test(MAP_PATH)
+        # length = 0
+        return {
+            "state": "success",
+            "path": path,
+            "length": length
+        }
+    except:
+        return {
+            "state": "fail",
+        }
+
+
+@app.route("/map_data/<path:filename>")
+def map_data(filename):
+    return send_from_directory(map_path, filename)
 
 
 @app.route('/')
@@ -27,67 +76,30 @@ def home_admin():
     return render_template('admin.html')
 
 
-@app.route('/path')
+@app.route('/path', methods=["GET", "POST"])
 # Trả về danh sách các đỉnh trên đường đi
-def path():
-    try:
-        body = request.get_json()
-
-        start = body["start"]
-        target = body["target"]
-        vehicle = body["vehicle"]
-
-        path, len = astar.astar(
-            MAP_PATH, start, target, vehicle)
-
-        return {
-            "state": "success",
-            "path": path,
-            "length": len
-        }
-    except:
-        return {
-            "state": "fail",
-        }
+def _path():
+    return path(request)
 
 
-@app.route('/admin/path')
+@app.route('/admin/path', methods=["GET", "POST"])
 # Trả về danh sách các đỉnh trên đường đi
-def path_admin():
-    try:
-        body = request.get_json()
-
-        start = body["start"]
-        target = body["target"]
-        vehicle = body["vehicle"]
-
-        path, len = astar.astar(
-            MAP_PATH, start, target, vehicle)
-
-        return {
-            "state": "success",
-            "path": path,
-            "length": len
-        }
-    except:
-        return {
-            "state": "fail",
-        }
+def _path_admin():
+    path(request)
 
 
-@app.route('/admin/update')
+@app.route('/admin/update', methods=["POST"])
 # cập nhật trạng thái đường đi
 def update_admin():
     try:
         body = request.get_json()
 
-        start = body["start"]
-        target = body["target"]
+        nodes = body["nodes"]
         vehicle = body["vehicle"]
         new_weight = body["new_weight"]
 
         update_weight.update_weight(
-            MAP_PATH, start, target, new_weight, vehicle)
+            MAP_PATH[vehicle], nodes, new_weight, vehicle)
         return {
             "state": "success"
         }
