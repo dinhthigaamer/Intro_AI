@@ -2,6 +2,7 @@ import networkx as nx
 import heapq
 from math import radians, sin, cos, sqrt, atan2
 
+
 def astar(path_graphml, start, goal, vehicle="car", use_weight_length=1):
     # ------------------- Load và chuẩn hóa map -------------------
     G = nx.read_graphml(path_graphml)
@@ -21,7 +22,7 @@ def astar(path_graphml, start, goal, vehicle="car", use_weight_length=1):
             except:
                 pass
 
-    # Edge: chuẩn hóa các thuộc tính cần thiết 
+    # Edge: chuẩn hóa các thuộc tính cần thiết
     for u, v, data in G.edges(data=True):
         # chiều dài
         if "length" in data:
@@ -31,7 +32,7 @@ def astar(path_graphml, start, goal, vehicle="car", use_weight_length=1):
                 data["length"] = 1.0
         else:
             data["length"] = 1.0
-        
+
         # trọng số
         if "weight" in data:
             try:
@@ -40,7 +41,7 @@ def astar(path_graphml, start, goal, vehicle="car", use_weight_length=1):
                 data["weight"] = 1.0
         else:
             data["weight"] = 1.0
-        
+
         # thêm thuộc tính mới là chi phí = weight * length
         data["weight_length"] = data["weight"] * data["length"]
 
@@ -54,10 +55,10 @@ def astar(path_graphml, start, goal, vehicle="car", use_weight_length=1):
             data["width"] = 3.0
 
         # data xử lý cho ràng buộc phương tiện
-        data["highway"] = str(data.get("highway","")).lower()
-        data["access"] = str(data.get("access","")).lower()
+        data["highway"] = str(data.get("highway", "")).lower()
+        data["access"] = str(data.get("access", "")).lower()
 
-        #data xử lý cho hướng xe được đi
+        # data xử lý cho hướng xe được đi
         one = str(data.get("oneway", "false")).lower()
         data["oneway"] = one in ("yes", "true", "1")
 
@@ -86,7 +87,7 @@ def astar(path_graphml, start, goal, vehicle="car", use_weight_length=1):
         hwy = edge.get("highway", "")
         acc = edge.get("access")  # có thể None
         width = edge.get("width")  # có thể None
-        
+
         # nếu trong data cạnh k có thuộc tính access thì hiểu là nhận giá trị "permit"
         if acc is None or acc == "":
             acc = "permit"
@@ -101,14 +102,14 @@ def astar(path_graphml, start, goal, vehicle="car", use_weight_length=1):
 
             if width is not None and width < 2.5:
                 return False
-            
+
             return True
 
         # ----- MOTORCYCLE -----
         if vehicle == "motorcycle":
             if hwy == "footway":
                 return False
-            
+
             if acc == "no":
                 return False
 
@@ -118,6 +119,10 @@ def astar(path_graphml, start, goal, vehicle="car", use_weight_length=1):
         if vehicle == "walk":
             if acc == "no":
                 return False
+            return True
+
+        # ----- BIKE -----
+        if vehicle == "bike":
             return True
 
         return False
@@ -138,7 +143,7 @@ def astar(path_graphml, start, goal, vehicle="car", use_weight_length=1):
         return haversine(y1, x1, y2, x2)
 
     # ------------------- A* -------------------
-    
+
     # khởi tạo g_score, f_score nhận giá trị lớn nhất
     g_score = {node: float("inf") for node in G.nodes}
     f_score = {node: float("inf") for node in G.nodes}
@@ -156,6 +161,8 @@ def astar(path_graphml, start, goal, vehicle="car", use_weight_length=1):
 
         if current in closed_set:
             continue
+
+        # print(current)
 
         closed_set.add(current)
 
@@ -193,7 +200,6 @@ def astar(path_graphml, start, goal, vehicle="car", use_weight_length=1):
 
                     heapq.heappush(open_set, (f_score[neighbor], neighbor))
 
-
     # ------------------- Reconstruct path -------------------
     if parent[goal] is None and start != goal:
         return None, float("inf")
@@ -206,4 +212,3 @@ def astar(path_graphml, start, goal, vehicle="car", use_weight_length=1):
 
     path.reverse()
     return path, g_score[goal]
-
