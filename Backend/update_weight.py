@@ -6,11 +6,17 @@ import sys
 # from file_path import MAP_DIR
 from pathlib import Path
 import networkx as nx
+import osmnx as ox
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
-target_path = "../map_data/weighted_graph.graphml"
-output_path = "../map_data/weighted_graph.graphml"
+target_path = "../map_data/phuong_lang.graphml"
+MAP_PATH = {
+    "car": "../map_data/phuong_lang_drive.graphml",
+    "bike": "../map_data/phuong_lang_bike.graphml",
+    "walk": "../map_data/phuong_lang_walk.graphml",
+    "motorcycle": "../map_data/phuong_lang_drive.graphml",
+}
 
 
 def check_point_exist(G, x, y):
@@ -29,12 +35,11 @@ def update_weight(path_graphml, start, goal, new_weight=1, vehicle=None):
     # Cái này đợi Minh
     try:
         if vehicle is not None:
-            path, len = astar.astar(path_graphml, start, goal,
-                                    vehicle, use_weight_length=0)
+            path, _ = astar.astar(path_graphml, start, goal,
+                                  vehicle, use_weight_length=0)
         else:
-            path, len = astar.astar(
+            path, _ = astar.astar(
                 path_graphml, start, goal, vehicle="car", use_weight_length=0)
-        # print(path)
 
         if path is None:
             return
@@ -42,12 +47,33 @@ def update_weight(path_graphml, start, goal, new_weight=1, vehicle=None):
         edges = list(zip(path[:-1], path[1:]))
 
         G = nx.read_graphml(target_path)
+        G_drive = nx.read_graphml(MAP_PATH["car"])
+        G_bike = nx.read_graphml(MAP_PATH["bike"])
+        G_walk = nx.read_graphml(MAP_PATH["walk"])
+        G_moto = nx.read_graphml(MAP_PATH["motorcycle"])
+        G_vehical = nx.read_graphml(MAP_PATH[vehicle])
+
+        graphs = [(G, target_path), (G_drive, MAP_PATH["car"]),
+                  (G_bike, MAP_PATH["bike"]), (G_walk, MAP_PATH["walk"]),
+                  (G_moto, MAP_PATH["motorcycle"])]
+
+        for gr, _ in graphs:
+            for key in list(gr.graph.keys()):
+                if "default" in key:
+                    del gr.graph[key]
+
         for a, b in edges:
-            for k in G[a][b]:
-                G[a][b][k]["weight"] = 1.0*new_weight
+            for k in G_vehical[a][b]:
+                osmid = G_vehical[a][b][k]["osmid"]
 
-        nx.write_graphml(G, output_path)
+                for gr, _ in graphs:
+                    for s, t, d in gr.edges(data=True):
+                        if (d["osmid"] == osmid):
+                            d["weight"] = 1.0*new_weight
+                            break
 
+        for gr, path in graphs:
+            ox.save_graphml(gr, path)
         return {"state": "updated successfully"}
     except:
         raise

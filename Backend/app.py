@@ -91,22 +91,26 @@ def _path_admin():
 @app.route('/admin/update', methods=["POST"])
 # cập nhật trạng thái đường đi
 def update_admin():
-    try:
-        body = request.get_json()
+    # try:
+    body = request.get_json()
 
-        nodes = body["nodes"]
-        vehicle = body["vehicle"]
-        new_weight = body["new_weight"]
+    nodes = body["nodes"]
+    vehicle = body["vehicle"]
+    new_weight = body["new_weight"]
 
+    nodes = convertor.coordinate_to_node(MAP_PATH[vehicle], nodes)
+
+    if (len(nodes) == 2):
         update_weight.update_weight(
-            MAP_PATH[vehicle], nodes, new_weight, vehicle)
-        return {
-            "state": "success"
-        }
-    except:
-        return {
-            "state": "fail"
-        }
+            MAP_PATH[vehicle], nodes[0], nodes[1], new_weight, vehicle)
+
+    return {
+        "state": "success"
+    }
+    # except:
+    #     return {
+    #         "state": "fail"
+    #     }
 
 
 if __name__ == '__main__':
