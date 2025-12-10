@@ -102,8 +102,8 @@ def update_weight_one_vehicle(path_graphml, start, goal, new_weight=1, vehicle=N
         edges = list(zip(path[:-1], path[1:]))
 
         G_vehical = nx.read_graphml(MAP_PATH[vehicle])
-        G = nx.read_graphml(target_path)
-        graphs = [(G_vehical, MAP_PATH[vehicle]), (G, target_path)]
+        # G = nx.read_graphml(target_path)
+        graphs = [(G_vehical, MAP_PATH[vehicle])]
 
         for gr, _ in graphs:
             for key in list(gr.graph.keys()):
