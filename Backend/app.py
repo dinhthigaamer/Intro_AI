@@ -19,6 +19,7 @@ app = Flask(
 )
 
 MAP_PATH = {
+    "all": "../map_data/phuong_lang.graphml",
     "car": "../map_data/phuong_lang_drive.graphml",
     "bike": "../map_data/phuong_lang_bike.graphml",
     "walk": "../map_data/phuong_lang_walk.graphml",
@@ -61,9 +62,14 @@ def path(request):
         }
 
 
-@app.route("/map_data/<path:filename>")
-def map_data(filename):
-    return send_from_directory(map_path, filename)
+@app.route('/full-graph')
+def full_graph():
+    coords, nodes = convertor.test(MAP_PATH["car"])
+    return {
+        "state": "success",
+        "path": coords,
+        "nodes": nodes
+    }
 
 
 @app.route('/')
@@ -91,26 +97,76 @@ def _path_admin():
 @app.route('/admin/update', methods=["POST"])
 # cập nhật trạng thái đường đi
 def update_admin():
-    # try:
-    body = request.get_json()
+    try:
+        body = request.get_json()
 
-    nodes = body["nodes"]
-    vehicle = body["vehicle"]
-    new_weight = body["new_weight"]
+        nodes = body["nodes"]
+        vehicle = body["vehicle"]
+        new_weight = body["new_weight"]
 
-    nodes = convertor.coordinate_to_node(MAP_PATH[vehicle], nodes)
+        nodes = convertor.coordinate_to_node(MAP_PATH[vehicle], nodes)
 
-    if (len(nodes) == 2):
-        update_weight.update_weight(
-            MAP_PATH[vehicle], nodes[0], nodes[1], new_weight, vehicle)
+        if (len(nodes) == 2):
+            update_weight.update_weight(
+                MAP_PATH[vehicle], nodes[0], nodes[1], new_weight, vehicle)
 
-    return {
-        "state": "success"
-    }
-    # except:
-    #     return {
-    #         "state": "fail"
-    #     }
+        return {
+            "state": "success"
+        }
+    except:
+        return {
+            "state": "fail"
+        }
+
+
+@app.route('/admin/ban_vehicle', methods=["POST"])
+# cập nhật trạng thái đường đi
+def ban_admin():
+    try:
+        body = request.get_json()
+
+        nodes = body["nodes"]
+        vehicle = body["vehicle"]
+        # new_weight = body["new_weight"]
+
+        nodes = convertor.coordinate_to_node(MAP_PATH[vehicle], nodes)
+
+        if (len(nodes) == 2):
+            update_weight.update_weight_one_vehicle(
+                MAP_PATH[vehicle], nodes[0], nodes[1], 9999, vehicle)
+
+        return {
+            "state": "success"
+        }
+    except:
+        return {
+            "state": "fail"
+        }
+
+
+@app.route('/admin/unban_vehicle', methods=["POST"])
+# cập nhật trạng thái đường đi
+def unban_admin():
+    try:
+        body = request.get_json()
+
+        nodes = body["nodes"]
+        vehicle = body["vehicle"]
+        # new_weight = body["new_weight"]
+
+        nodes = convertor.coordinate_to_node(MAP_PATH[vehicle], nodes)
+
+        if (len(nodes) == 2):
+            update_weight.update_weight_one_vehicle(
+                MAP_PATH[vehicle], nodes[0], nodes[1], 1, vehicle)
+
+        return {
+            "state": "success"
+        }
+    except:
+        return {
+            "state": "fail"
+        }
 
 
 if __name__ == '__main__':

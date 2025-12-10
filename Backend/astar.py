@@ -45,6 +45,10 @@ def astar(path_graphml, start, goal, vehicle="car", use_weight_length=1):
         # thêm thuộc tính mới là chi phí = weight * length
         data["weight_length"] = data["weight"] * data["length"]
 
+        # Trường hợp cạnh bị cấm
+        if data["weight"] == 9999:
+            data["weight_length"] = -1
+
         # độ rộng
         if "width" in data:
             try:
@@ -186,6 +190,11 @@ def astar(path_graphml, start, goal, vehicle="car", use_weight_length=1):
 
                 # Cost theo lựa chọn
                 cost_edge = edge["weight_length"] if use_weight_length == 1 else edge["length"]
+
+                # Trường hợp cạnh bị cấm thì không đi vào
+                if cost_edge < 0:
+                    continue
+
                 tentative_g = g_score[current] + cost_edge
 
                 # Nếu đã đóng -> bỏ qua (giống C++)

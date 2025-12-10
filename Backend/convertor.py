@@ -21,12 +21,16 @@ def node_to_coordinate(map_path, list_of_node):
         u = list_of_node[i]
         lat = float(G.nodes[u]["y"])
         lon = float(G.nodes[u]["x"])
-        coords.append((lat, lon))
 
         if i == len(list_of_node)-1:
+            coords.append((lat, lon, 1.0))
             continue
 
         v = list_of_node[i+1]
+        w = float(G[u][v][0]["weight"])
+
+        print(G[u][v][0])
+        print(u, v, w)
 
         if "geometry" in G[u][v][0]:
             # print(u, v, G[u][v][0])
@@ -38,7 +42,13 @@ def node_to_coordinate(map_path, list_of_node):
                 data = d.strip().split(" ")
                 lat = float(data[1])
                 lon = float(data[0])
-                coords.append((lat, lon))
+
+                if (d == latlon[-1]):
+                    pass
+                else:
+                    coords.append((lat, lon, w))
+        else:
+            coords.append((lat, lon, w))
 
     print(coords)
 
@@ -74,14 +84,32 @@ def coordinate_to_node(map_path, list_of_coord):
 def test(map_path):
     G = nx.read_graphml(map_path)
     coords = []
+    nodes = []
 
-    for s, t, d in G.edges:
-        coords.append([float(G.nodes[s]["y"]), float(G.nodes[s]["x"])])
-        coords.append([float(G.nodes[t]["y"]), float(G.nodes[t]["x"])])
-    # for node in G.nodes:
-    #     coords.append([float(G.nodes[node]["y"]), float(G.nodes[node]["x"])])
+    for s, t, d in G.edges(data=True):
+        if "geometry" in d:
+            latlon = d["geometry"].replace(
+                "LINESTRING (", "").replace(")", "").split(",")
 
-    return coords
+            # print("LineString: ", [d.strip().split(" ") for d in latlon])
+            last = None
+            for l in latlon:
+                data = l.strip().split(" ")
+                lat = float(data[1])
+                lon = float(data[0])
+
+                if last is not None:
+                    coords.append([[float(last[0]), float(last[1])], [
+                        float(lat), float(lon)]])
+                last = (lat, lon)
+        else:
+            coords.append([[float(G.nodes[s]["y"]), float(G.nodes[s]["x"])], [
+                float(G.nodes[t]["y"]), float(G.nodes[t]["x"])]])
+
+    for node in G.nodes:
+        nodes.append([float(G.nodes[node]["y"]), float(G.nodes[node]["x"])])
+
+    return coords, nodes
 
 
 if __name__ == '__main__':
