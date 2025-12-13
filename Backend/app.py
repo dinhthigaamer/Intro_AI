@@ -23,7 +23,7 @@ MAP_PATH = {
     "car": "../map_data/phuong_lang_drive.graphml",
     "bike": "../map_data/phuong_lang_bike.graphml",
     "walk": "../map_data/phuong_lang_walk.graphml",
-    "motorcycle": "../map_data/phuong_lang_drive.graphml",
+    "motorcycle": "../map_data/phuong_lang_motorcycle.graphml",
 }
 
 
@@ -62,9 +62,12 @@ def path(request):
         }
 
 
-@app.route('/full-graph')
+@app.route('/full-graph', methods=["POST"])
 def full_graph():
-    coords, nodes = convertor.test(MAP_PATH["car"])
+    body = request.get_json()
+
+    vehicle = body["vehicle"]
+    coords, nodes = convertor.test(MAP_PATH[vehicle])
     return {
         "state": "success",
         "path": coords,
