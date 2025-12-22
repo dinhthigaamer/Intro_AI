@@ -1,12 +1,14 @@
 <!doctype html>
 <html lang="vi">
+
 <head>
   <meta charset="utf-8">
   <title>Admin – Quản lý đường</title>
   <link rel="stylesheet" href="style.css">
-  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css"/>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
 </head>
-<body>  
+
+<body>
   <div class="container">
     <div class="sidebar">
       <h2>Quản lý map</h2>
@@ -14,27 +16,43 @@
       <input id="origin-input" placeholder="Nhập tên địa điểm">
       <label>Điểm đến</label>
       <input id="dest-input" placeholder="Nhập tên địa điểm">
+      <label>Phương tiện</label>
+      <select id="vehicle">
+        <option value="car">Ô tô</option>
+        <option value="motorcycle">Xe máy</option>
+        <option value="bike">Xe đạp</option>
+        <option value="walk">Đi bộ</option>
+      </select>
+      <p class="route-info">
+        Độ dài đường đi: <span id="distance">--</span>
+      </p>
       <div class="actions">
         <button id="find-route">Tìm đường</button>
+        <button id="Global-Ban">Cấm phương tiện</button>
+        <button id="Unban">Bỏ lệnh cấm</button>
         <button id="clear-route">Xóa</button>
       </div>
       <div id="route-stats"></div>
 
-      <h3>Cập nhật đoạn đường</h3>
-      <div>Đoạn chọn: <span id="segment-id">—</span></div>
+      <h3>Cập nhật đường</h3>
       <label>Trạng thái</label>
       <select id="segment-status">
         <option value="normal">Thông thoáng</option>
-        <option value="jam">Tắc</option>
-        <option value="jam">Ngập</option>
+        <option value="jam">Tắc vừa</option>
+        <option value="extremly_jam">Rất tắc</option>
+        <option value="flood">Ngập</option>
+        <option value="forbiden">Cấm đường</option>
+        <option value="custom">Tuỳ chọn</option>
       </select>
       <label>Trọng số</label>
-      <input id="segment-weight" type="number" value="1">
+      <input id="segment-weight" type="number" value="1" disabled="true">
       <button id="update-segment">Cập nhật</button>
     </div>
     <div id="map" class="map"></div>
   </div>
   <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+  <!-- <script src="user.js"> </script> -->
   <script src="admin.js"></script>
 </body>
+
 </html>

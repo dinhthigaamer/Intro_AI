@@ -5331,7 +5331,7 @@
       <data key="d14">False</data>
       <data key="d15">123.74009060403529</data>
       <data key="d17">LINESTRING (105.8036281 21.0234259, 105.8036202 21.0235455, 105.8036148 21.0236582, 105.8036036 21.0238887, 105.8035963 21.0240397, 105.8035752 21.0245376)</data>
-      <data key="d16">1</data>
+      <data key="d16">1.0</data>
     </edge>
     <edge source="283141649" target="283142282" id="0">
       <data key="d8">1217943689</data>
@@ -10965,7 +10965,7 @@
     <edge source="5485672860" target="11464500808" id="0">
       <data key="d8">[1235086850, 570574667]</data>
       <data key="d9">service</data>
-      <data key="d12">['Ngách 69/4 Phố Chùa Láng', 'Ngõ 69 Chùa Láng']</data>
+      <data key="d12">['Ngõ 69 Chùa Láng', 'Ngách 69/4 Phố Chùa Láng']</data>
       <data key="d18">alley</data>
       <data key="d13">False</data>
       <data key="d14">True</data>
@@ -13160,7 +13160,7 @@
     </edge>
     <edge source="5719062848" target="13271852586" id="0">
       <data key="d8">[954134704, 1446461406]</data>
-      <data key="d9">['service', 'residential']</data>
+      <data key="d9">['residential', 'service']</data>
       <data key="d13">False</data>
       <data key="d14">False</data>
       <data key="d15">94.44556417889294</data>
@@ -13337,9 +13337,9 @@
     <edge source="5719067224" target="1682822779" id="0">
       <data key="d8">[675486872, 675486873]</data>
       <data key="d9">residential</data>
-      <data key="d12">['Ngõ 82 Chùa Láng', 'Ngõ 82 Phố Chùa Láng']</data>
+      <data key="d12">['Ngõ 82 Phố Chùa Láng', 'Ngõ 82 Chùa Láng']</data>
       <data key="d13">True</data>
-      <data key="d19">['4.75', '5.6']</data>
+      <data key="d19">['5.6', '4.75']</data>
       <data key="d14">False</data>
       <data key="d15">86.46547493866879</data>
       <data key="d17">LINESTRING (105.8059927 21.024685, 105.8062505 21.0246859, 105.8063125 21.0246679, 105.8063244 21.0246192, 105.8063222 21.0241928)</data>
@@ -16292,7 +16292,7 @@
     <edge source="8273234036" target="8736593833" id="0">
       <data key="d8">[601888913, 890044604]</data>
       <data key="d9">service</data>
-      <data key="d12">['Ngõ 62 Phố Nguyễn Chí Thanh', 'Ngõ 62 Đường Nguyễn Chí Thanh']</data>
+      <data key="d12">['Ngõ 62 Đường Nguyễn Chí Thanh', 'Ngõ 62 Phố Nguyễn Chí Thanh']</data>
       <data key="d18">alley</data>
       <data key="d13">False</data>
       <data key="d14">True</data>
@@ -17708,7 +17708,7 @@
     <edge source="8736593833" target="8273234036" id="0">
       <data key="d8">[601888913, 890044604]</data>
       <data key="d9">service</data>
-      <data key="d12">['Ngõ 62 Phố Nguyễn Chí Thanh', 'Ngõ 62 Đường Nguyễn Chí Thanh']</data>
+      <data key="d12">['Ngõ 62 Đường Nguyễn Chí Thanh', 'Ngõ 62 Phố Nguyễn Chí Thanh']</data>
       <data key="d18">alley</data>
       <data key="d13">False</data>
       <data key="d14">False</data>
@@ -23535,7 +23535,7 @@
     </edge>
     <edge source="13271852586" target="5719062848" id="0">
       <data key="d8">[954134704, 1446461406]</data>
-      <data key="d9">['service', 'residential']</data>
+      <data key="d9">['residential', 'service']</data>
       <data key="d12">Ngõ 33 Chùa Láng</data>
       <data key="d13">False</data>
       <data key="d14">True</data>
@@ -23602,7 +23602,7 @@
       <data key="d15">16.523822126528767</data>
       <data key="d16">1</data>
     </edge>
-    <data key="d0">2025-12-08 08:35:42</data>
+    <data key="d0">2025-12-08 22:49:06</data>
     <data key="d1">OSMnx 2.0.7</data>
     <data key="d2">epsg:4326</data>
     <data key="d3">True</data>
