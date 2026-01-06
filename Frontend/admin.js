@@ -12,41 +12,58 @@ document.addEventListener('DOMContentLoaded', async () => {
   let picking = 'origin';
   let myPolyline = []
 
-  async function drawBoundaryPhuongLang() {
-    const query = `
-      [out:json];
-      relation["boundary"="administrative"]["name"="Phường Láng"];
-      (._;>;);
-      out;
-    `;
-    const url = "https://overpass-api.de/api/interpreter?data=" + encodeURIComponent(query);
+  // async function drawBoundaryPhuongLang() {
+  //   const query = `
+  //     [out:json];
+  //     relation["boundary"="administrative"]["name"="Phường Láng"];
+  //     (._;>;);
+  //     out;
+  //   `;
+  //   const url = "https://overpass-api.de/api/interpreter?data=" + encodeURIComponent(query);
 
-    try {
-      const res = await fetch(url);
-      const data = await res.json();
+  //   try {
+  //     const res = await fetch(url);
+  //     const data = await res.json();
 
-      const nodes = {};
-      data.elements.filter(el => el.type === "node").forEach(node => {
-        nodes[node.id] = [node.lat, node.lon];
-      });
+  //     const nodes = {};
+  //     data.elements.filter(el => el.type === "node").forEach(node => {
+  //       nodes[node.id] = [node.lat, node.lon];
+  //     });
 
-      data.elements.filter(el => el.type === "way").forEach(way => {
-        const coords = way.nodes.map(id => nodes[id]).filter(Boolean);
-        if (coords.length > 0) {
-          L.polygon(coords, {
-            color: 'red',
-            weight: 2,
-            fillColor: 'red',
-            fillOpacity: 0.1
-          }).addTo(map);
-        }
-      });
-    } catch (err) {
-      console.error("Lỗi khi tải boundary phường Láng:", err);
-    }
+  //     data.elements.filter(el => el.type === "way").forEach(way => {
+  //       const coords = way.nodes.map(id => nodes[id]).filter(Boolean);
+  //       console.log(coords)
+  //       if (coords.length > 0) {
+  //         L.polygon(coords, {
+  //           color: 'red',
+  //           weight: 2,
+  //           fillColor: 'red',
+  //           fillOpacity: 0.1
+  //         }).addTo(map);
+  //       }
+  //     });
+  //   } catch (err) {
+  //     console.error("Lỗi khi tải boundary phường Láng:", err);
+  //   }
+  // }
+
+  // await drawBoundaryPhuongLang();
+
+  async function lmao() {
+    const res = await fetch("/phuong_lang_boundary.json");
+    const boundaries = await res.json();
+
+    boundaries.forEach(coords => {
+      L.polygon(coords, {
+        color: 'red',
+        weight: 2,
+        fillColor: 'red',
+        fillOpacity: 0.1
+      }).addTo(map);
+    });
   }
 
-  await drawBoundaryPhuongLang();
+  lmao();
 
   async function searchPlace(query) {
     const url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}`;
