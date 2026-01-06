@@ -55,6 +55,18 @@ document.addEventListener('DOMContentLoaded', async () => {
     return res.json();
   }
 
+  async function reverseGeocode(lat, lon) {
+    const url = `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}`;
+
+    const res = await fetch(url, {
+      headers: {
+        "User-Agent": "your-app-name" // Nominatim khuyến cáo có
+      }
+    });
+
+    return res.json();
+  }
+
   document.getElementById('clear-route').onclick = async () => {
     // Xoá hết những đường đi đang hiển thị
     myPolyline.forEach((d) => { d.remove() })
@@ -98,9 +110,43 @@ document.addEventListener('DOMContentLoaded', async () => {
   }
 
   document.getElementById('find-route').onclick = async () => {
-    const input = await getCoords()
-    const coords = input["coords"]
-    const vehicle = input["vehicle"]
+    const originQuery = document.getElementById('origin-input').value.trim();
+    const destQuery = document.getElementById('dest-input').value.trim();
+
+    const vehicle = document.getElementById('vehicle').value;
+
+    let coords = []
+
+    if (originQuery) {
+      const data = await searchPlace(originQuery);
+      if (data[0]) {
+        const { lat, lon, display_name } = data[0];
+
+        coords.push([Number(lat), Number(lon)])
+
+        if (originMarker) originMarker.remove();
+        originMarker = L.marker([lat, lon]).addTo(map).bindPopup("Điểm đi: " + display_name).openPopup();
+        map.setView([lat, lon], 15);
+      }
+    }
+
+    if (destQuery) {
+      const data = await searchPlace(destQuery);
+      if (data[0]) {
+        const { lat, lon, display_name } = data[0];
+        coords.push([Number(lat), Number(lon)])
+        // destNode = await findNearestNode(lat, lon)
+
+        if (destMarker) destMarker.remove();
+        destMarker = L.marker([lat, lon]).addTo(map).bindPopup("Điểm đến: " + display_name).openPopup();
+        map.setView([lat, lon], 15);
+      }
+    }
+
+    // L.polyline(coords, {
+    //   color: 'red',
+    //   weight: 2,
+    // }).addTo(map);
 
     const body = { "nodes": coords, "vehicle": vehicle }
     let res = null
@@ -114,6 +160,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         body: JSON.stringify(body)
       });
     }
+
 
     // Xoá hết những đường đi đang hiển thị
     myPolyline.forEach((d) => { d.remove() })
@@ -133,7 +180,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       console.log("len" + len)
 
       document.getElementById("distance").textContent =
-        (float(len) / 1000).toFixed(2) + " km";
+        (len / 1000).toFixed(2) + " km";
 
       if (path[0] != coords[0])
         myPolyline.push(L.polyline([coords[0], path[0]], {
@@ -163,19 +210,32 @@ document.addEventListener('DOMContentLoaded', async () => {
       alert("Tìm được đường đi")
     }
   };
-  // let _picking = 'origin';
-  // map.on('click', e => {
-  //   const { lat, lng } = e.latlng;
-  //   if (_picking === 'origin') {
-  //     if (originMarker) originMarker.remove();
-  //     originMarker = L.marker([lat, lng]).addTo(map).bindPopup("Điểm đi").openPopup();
-  //     _picking = 'dest';
-  //   } else {
-  //     if (destMarker) destMarker.remove();
-  //     destMarker = L.marker([lat, lng]).addTo(map).bindPopup("Điểm đến").openPopup();
-  //     _picking = 'origin';
-  //   }
-  // });
+
+  map.on('click', async (e) => {
+    const { lat, lng } = e.latlng;
+    if (picking === 'origin') {
+      if (originMarker) originMarker.remove();
+      originMarker = L.marker([lat, lng]).addTo(map).bindPopup("Điểm đi").openPopup();
+      const data = await reverseGeocode(lat, lng);
+
+      if (data?.display_name) {
+        document.getElementById("origin-input").value = data.display_name;
+      }
+
+      picking = 'dest';
+    } else {
+      if (destMarker) destMarker.remove();
+      destMarker = L.marker([lat, lng]).addTo(map).bindPopup("Điểm đến").openPopup();
+
+      const data = await reverseGeocode(lat, lng);
+
+      if (data?.display_name) {
+        document.getElementById("dest-input").value = data.display_name;
+      }
+
+      picking = 'origin';
+    }
+  });
 
   document.getElementById('Global-Ban').onclick = async () => {
     const input = await getCoords()

@@ -55,6 +55,18 @@ document.addEventListener('DOMContentLoaded', async () => {
     return res.json();
   }
 
+  async function reverseGeocode(lat, lon) {
+    const url = `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}`;
+
+    const res = await fetch(url, {
+      headers: {
+        "User-Agent": "your-app-name" // Nominatim khuyến cáo có
+      }
+    });
+
+    return res.json();
+  }
+
   document.getElementById('clear-route').onclick = async () => {
     myPolyline.forEach((d) => { d.remove() })
   }
@@ -195,16 +207,29 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
   }
 
-  // map.on('click', e => {
-  //   const { lat, lng } = e.latlng;
-  //   if (picking === 'origin') {
-  //     if (originMarker) originMarker.remove();
-  //     originMarker = L.marker([lat, lng]).addTo(map).bindPopup("Điểm đi").openPopup();
-  //     picking = 'dest';
-  //   } else {
-  //     if (destMarker) destMarker.remove();
-  //     destMarker = L.marker([lat, lng]).addTo(map).bindPopup("Điểm đến").openPopup();
-  //     picking = 'origin';
-  //   }
-  // });
+  map.on('click', async (e) => {
+    const { lat, lng } = e.latlng;
+    if (picking === 'origin') {
+      if (originMarker) originMarker.remove();
+      originMarker = L.marker([lat, lng]).addTo(map).bindPopup("Điểm đi").openPopup();
+      const data = await reverseGeocode(lat, lng);
+
+      if (data?.display_name) {
+        document.getElementById("origin-input").value = data.display_name;
+      }
+
+      picking = 'dest';
+    } else {
+      if (destMarker) destMarker.remove();
+      destMarker = L.marker([lat, lng]).addTo(map).bindPopup("Điểm đến").openPopup();
+
+      const data = await reverseGeocode(lat, lng);
+
+      if (data?.display_name) {
+        document.getElementById("dest-input").value = data.display_name;
+      }
+
+      picking = 'origin';
+    }
+  });
 });
